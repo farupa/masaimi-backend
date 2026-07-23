@@ -11,8 +11,21 @@ const User = require("./models/User");
 
 const app = express();
 
+const allowedOrigins = [
+  process.env.CORS_ORIGIN,
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "http://127.0.0.1:3000"
+].filter(Boolean);
+
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"), false);
+    }
+  },
   credentials: true,
 }));
 app.use(express.json());
