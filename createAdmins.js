@@ -3,12 +3,27 @@ const mongoose = require("mongoose");
 const User = require("./models/User");
 
 const admins = [
-  { name: "Admin One", phone: "01799349013", password: "admin123", role: "admin", status: "approved" },
-  { name: "Admin Two", phone: "01700000000", password: "admin456", role: "admin", status: "approved" },
+  {
+    name: "Admin One",
+    phone: process.env.ADMIN_PHONE || "01799349013",
+    password: process.env.ADMIN_PASSWORD || "admin123",
+    role: "admin",
+    status: "approved",
+  },
+  {
+    name: "Admin Two",
+    phone: process.env.ADMIN_TWO_PHONE || "01700000000",
+    password: process.env.ADMIN_TWO_PASSWORD || "admin456",
+    role: "admin",
+    status: "approved",
+  },
 ];
 
-mongoose.connect(process.env.MONGO_URI).then(async () => {
-  console.log("MongoDB connected");
+const mongoUri = process.env.MONGO_URI || "mongodb+srv://masaimi:masaimi12345@cluster0.znyy2.mongodb.net/masaimi?retryWrites=true&w=majority&appName=Cluster0";
+const mongoDbName = process.env.MONGO_DB_NAME || "masaimi";
+
+mongoose.connect(mongoUri, { dbName: mongoDbName }).then(async () => {
+  console.log(`MongoDB connected to database: ${mongoDbName}`);
 
   for (const admin of admins) {
     const exists = await User.findOne({ phone: admin.phone });

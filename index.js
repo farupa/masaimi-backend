@@ -7,6 +7,7 @@ require("dotenv").config();
 const authRoutes = require("./routes/auth");
 const receiptRoutes = require("./routes/receipts");
 const adminRoutes = require("./routes/admin");
+const User = require("./models/User");
 
 const app = express();
 
@@ -28,10 +29,38 @@ app.use("/api/admin", adminRoutes);
 // Health check
 app.get("/", (req, res) => res.json({ message: "MASAIMI API running" }));
 
+const mongoUri = process.env.MONGO_URI || "mongodb+srv://masaimi:masaimi12345@cluster0.znyy2.mongodb.net/masaimi?retryWrites=true&w=majority&appName=Cluster0";
+const mongoDbName = process.env.MONGO_DB_NAME || "masaimi";
+
+const ensureDefaultAdmin = async () => {
+  try {
+    const adminPhone = process.env.ADMIN_PHONE || "01799349013";
+    const adminPassword = process.env.ADMIN_PASSWORD || "admin123";
+
+    let admin = await User.findOne({ phone: adminPhone });
+
+    if (!admin) {
+      admin = await User.create({
+        name: "Admin One",
+        phone: adminPhone,
+        password: adminPassword,
+        role: "admin",
+        status: "approved",
+      });
+      console.log("Default admin created successfully");
+    } else {
+      console.log("Default admin already exists");
+    }
+  } catch (error) {
+    console.error("Error ensuring default admin:", error);
+  }
+};
+
 mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("MongoDB connected");
+  .connect(mongoUri, { dbName: mongoDbName })
+  .then(async () => {
+    console.log(`MongoDB connected to database: ${mongoDbName}`);
+    await ensureDefaultAdmin();
     app.listen(process.env.PORT, () =>
       console.log(`Server running on port ${process.env.PORT}`)
     );
