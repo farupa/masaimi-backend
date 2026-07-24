@@ -21,6 +21,7 @@ const allowedOrigins = [
 app.use(cors({
   origin: [
     "http://localhost:3000",
+    "http://localhost:3001",
     "https://masaimi.vercel.app",
     "https://masaimi-ai7m19md8-farzana1.vercel.app",
   ],
