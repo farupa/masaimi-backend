@@ -19,13 +19,11 @@ const allowedOrigins = [
 ].filter(Boolean);
 
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"), false);
-    }
-  },
+  origin: [
+    "http://localhost:3000",
+    "https://masaimi.vercel.app",
+    "https://masaimi-ai7m19md8-farzana1.vercel.app",
+  ],
   credentials: true,
 }));
 app.use(express.json());
